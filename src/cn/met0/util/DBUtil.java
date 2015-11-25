@@ -13,15 +13,20 @@ import java.util.Map;
 /**
  * 数据库工具类
  * 
+ * 
  * @author Met0
  *
  */
-public class DBUtil {
+public  class DBUtil  {
 
-	private Connection conn;
+	protected Connection conn;
 	private Statement sm;
 	private PreparedStatement ps;
 	private ResultSet rs;
+	private String driver;
+	private String connUrl;
+	private String name;
+	private String pwd;
 
 	/**
 	 * 查询数据，把查询的数据转为map类型
@@ -58,7 +63,6 @@ public class DBUtil {
 	 */
 	public ResultSet query(String sql, Object[] param)
 			throws ClassNotFoundException, SQLException {
-
 		ps = getConn().prepareStatement(sql);
 		int i = 0;
 		if (param != null) {
@@ -66,7 +70,6 @@ public class DBUtil {
 				ps.setObject(++i, p);
 			}
 		}
-
 		rs = ps.executeQuery();
 
 		return rs;
@@ -87,9 +90,9 @@ public class DBUtil {
 			throws ClassNotFoundException, SQLException {
 		ps = getConn().prepareStatement(sql);
 		for (int i = 1; i <= param.length; i++) {
-			getPs().setObject(i, param[i - 1]);
+			ps.setObject(i, param[i - 1]);
 		}
-		return getPs().executeUpdate();
+		return ps.executeUpdate();
 	}
 
 	/**
@@ -99,18 +102,16 @@ public class DBUtil {
 	 * @return
 	 * @throws SQLException
 	 */
-	private Map getMap(ResultSet rs) throws SQLException {
+	public Map getMap(ResultSet rs) throws SQLException {
 
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
 		Map result = new HashMap();
-
 		for (int i = 1; i <= columnCount; i++) {
 			String columnName = rsmd.getColumnName(i);
 			String value = rs.getString(i);
 			result.put(columnName, value);
 		}
-
 		return result;
 	}
 
@@ -140,43 +141,31 @@ public class DBUtil {
 	}
 
 	/**
-	 * 获取数据库连接
+	 * 获取数据库连接对象
 	 * 
 	 * @return
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
 	public Connection getConn() throws SQLException, ClassNotFoundException {
-		if (conn == null || conn.isClosed()) {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			conn = DriverManager.getConnection(
-					"jdbc:oracle:thin:@192.168.0.99:1521:orcl", "bbpro",
-					"bbpro");
+		if(conn == null || conn.isClosed()){	
+			conn = DriverManager.getConnection(connUrl, name, pwd);
 		}
 		return conn;
 	}
 
 	/**
-	 * 获取数据库流
 	 * 
-	 * @return 数据库 Statement 对象
+	 * @param conf
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public Statement getSm() throws ClassNotFoundException, SQLException {
-		if (sm == null) {
-			sm = getConn().createStatement();
-		}
-		return sm;
+	public DBUtil(Map conf) throws ClassNotFoundException, SQLException{
+		this.driver = (String) conf.get("driver");
+		Class.forName(driver);
+		this.connUrl = (String) conf.get("url");
+		this.name = (String) conf.get("name");
+		this.pwd = (String) conf.get("pwd");
 	}
-
-	/**
-	 * 获取数据库 PreparedStatement 对象
-	 * 
-	 * @return
-	 */
-	public PreparedStatement getPs() {
-		return ps;
-	}
-
+	
 }

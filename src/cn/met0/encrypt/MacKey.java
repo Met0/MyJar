@@ -411,5 +411,26 @@ public class MacKey {
           iOutput[iOffO + 2] = x >> 1 & 0x01;
           iOutput[iOffO + 3] = x & 0x01;
       }
+      
+      
+      private static MacKey mac;
+      
+      /**
+       * mac加密
+       * @param strKey hex 8字节 
+       * @param strInitData 初始向量 0000000000000000
+       * @param strMacData hex 8字节
+       * @return
+       * @throws Exception
+       */
+      public static String encrypt(String strKey, String strInitData, String strMacData) throws Exception{
+    	  if(mac == null){
+    		  mac = new MacKey();
+    	  }
+    	  return mac.Str3MAC(strKey, strInitData, strMacData);
+      }
+      
+      
+      
 	
 }
