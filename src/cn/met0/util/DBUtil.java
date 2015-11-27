@@ -40,7 +40,7 @@ public  class DBUtil  {
 	 * @throws ClassNotFoundException
 	 */
 	public Map queryToMap(String sql, Object[] objs) throws SQLException,
-			ClassNotFoundException {
+			{
 		Map result = null;
 		rs = query(sql, objs);
 		if (rs.next()) {
@@ -62,7 +62,7 @@ public  class DBUtil  {
 	 * @throws ClassNotFoundException
 	 */
 	public ResultSet query(String sql, Object[] param)
-			throws ClassNotFoundException, SQLException {
+			throws SQLException {
 		ps = getConn().prepareStatement(sql);
 		int i = 0;
 		if (param != null) {
@@ -147,7 +147,7 @@ public  class DBUtil  {
 	 * @throws SQLException 
 	 * @throws ClassNotFoundException 
 	 */
-	public Connection getConn() throws SQLException, ClassNotFoundException {
+	public Connection getConn() throws SQLException{
 		if(conn == null || conn.isClosed()){	
 			conn = DriverManager.getConnection(connUrl, name, pwd);
 		}
@@ -160,7 +160,7 @@ public  class DBUtil  {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public DBUtil(Map conf) throws ClassNotFoundException, SQLException{
+	public DBUtil(Map conf) throws ClassNotFoundException{
 		this.driver = (String) conf.get("driver");
 		Class.forName(driver);
 		this.connUrl = (String) conf.get("url");
